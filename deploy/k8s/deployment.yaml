@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genkan
+  namespace: genkan
+  labels:
+    app: genkan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: genkan
+  template:
+    metadata:
+      labels:
+        app: genkan
+    spec:
+      # リポジトリ/パッケージを非公開にした場合は有効化（README 参照）
+      # imagePullSecrets:
+      #   - name: ghcr-pull
+      containers:
+        - name: genkan
+          image: ghcr.io/k-kanke/genkan:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 5
+          resources:
+            requests: { cpu: 10m, memory: 32Mi }
+            limits: { memory: 128Mi }
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+            - { name: cache, mountPath: /var/cache/nginx }
+      volumes:
+        - { name: tmp, emptyDir: {} }
+        - { name: cache, emptyDir: {} }

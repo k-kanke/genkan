@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: genkan
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+# タグ固定したい場合: kustomize edit set image ghcr.io/k-kanke/genkan=ghcr.io/k-kanke/genkan:sha-xxxxxxx
+images:
+  - name: ghcr.io/k-kanke/genkan
+    newTag: latest
