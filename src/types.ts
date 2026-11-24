@@ -69,3 +69,35 @@ export interface ToolLink {
   description: string
   url: string
 }
+
+// ---- クラスタビュー（実クラスタから取得） ----
+export interface ClusterPod {
+  name: string
+  namespace: string
+  /** Running / Pending / Succeeded / Failed など。起動中の細かい状態は reason に */
+  phase: string
+  reason?: string
+  restarts: number
+}
+
+export interface ClusterNodeView {
+  name: string
+  role: NodeRole
+  ip: string
+  ready: boolean
+  /** cordon されている（新しい Pod が置かれない） */
+  unschedulable: boolean
+  /** metrics-server が取れたときだけ入る（0-100） */
+  cpu?: number
+  mem?: number
+  pods: ClusterPod[]
+}
+
+export interface ClusterView {
+  nodes: ClusterNodeView[]
+  /** どのノードにも割り当てられていない Pod（Pending など） */
+  unscheduled: ClusterPod[]
+  /** false のときはモック表示 */
+  live: boolean
+  updatedAt: number
+}

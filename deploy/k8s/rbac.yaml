@@ -1,0 +1,31 @@
+# genkan のクラスタビュー用。読み取り専用（pods / nodes / ノードのメトリクスの get, list のみ）
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: genkan
+  namespace: genkan
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: genkan-viewer
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "nodes"]
+    verbs: ["get", "list"]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["nodes"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: genkan-viewer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: genkan-viewer
+subjects:
+  - kind: ServiceAccount
+    name: genkan
+    namespace: genkan

@@ -15,6 +15,7 @@ spec:
       labels:
         app: genkan
     spec:
+      serviceAccountName: genkan
       # リポジトリ/パッケージを非公開にした場合は有効化（README 参照）
       # imagePullSecrets:
       #   - name: ghcr-pull
@@ -40,6 +41,20 @@ spec:
           volumeMounts:
             - { name: tmp, mountPath: /tmp }
             - { name: cache, mountPath: /var/cache/nginx }
+        # クラスタ読み取り用。127.0.0.1:8001 のみで待ち受け、外には出さない（nginx が GET の一部だけ中継）
+        - name: kube-proxy
+          image: registry.k8s.io/kubectl:v1.36.6
+          args: ["proxy", "--address=127.0.0.1", "--port=8001"]
+          resources:
+            requests: { cpu: 10m, memory: 24Mi }
+            limits: { memory: 96Mi }
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
       volumes:
         - { name: tmp, emptyDir: {} }
         - { name: cache, emptyDir: {} }

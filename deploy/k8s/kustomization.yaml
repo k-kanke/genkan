@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: genkan
 resources:
   - namespace.yaml
+  - rbac.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml
