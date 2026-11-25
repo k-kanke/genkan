@@ -111,6 +111,7 @@ a { color: inherit; text-decoration: none; }
 .nodes { display: grid; gap: 10px; }
 .node-card { margin-bottom: 0; }
 .node-bars { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: center; margin-top: 10px; }
+.node-pods summary { cursor: pointer; margin: 10px 0 4px; user-select: none; }
 .ns { border-top: 1px solid var(--line-s); padding: 6px 0; }
 .ns summary { cursor: pointer; min-height: 32px; display: flex; align-items: center; gap: 8px; }
 .pod-row { display: flex; align-items: center; gap: 8px; min-height: 28px; padding-left: 4px; }
