@@ -41,6 +41,8 @@ spec:
           volumeMounts:
             - { name: tmp, mountPath: /tmp }
             - { name: cache, mountPath: /var/cache/nginx }
+            # 起動時に nginx の設定をテンプレートから生成する(読み取り専用のルートでも書けるように)
+            - { name: conf, mountPath: /etc/nginx/conf.d }
         # クラスタ読み取り用。127.0.0.1:8001 のみで待ち受け、外には出さない（nginx が GET の一部だけ中継）
         - name: kube-proxy
           image: registry.k8s.io/kubectl:v1.36.6
@@ -58,3 +60,4 @@ spec:
       volumes:
         - { name: tmp, emptyDir: {} }
         - { name: cache, emptyDir: {} }
+        - { name: conf, emptyDir: {} }
