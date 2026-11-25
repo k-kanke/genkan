@@ -73,3 +73,4 @@ Tailscale をオンにして `https://genkan.<TAILNET>`（`<TAILNET>` は例: `t
 ## スタイル
 
 素のCSS（`src/styles.css`）。フォントは Noto Sans JP / JetBrains Mono（`@fontsource` で同梱、オフライン可）。
+<!-- genkan task check -->
