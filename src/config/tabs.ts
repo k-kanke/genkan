@@ -1,4 +1,4 @@
-import { Bot, MessageSquare, Server, type LucideIcon } from 'lucide-react'
+import { Bot, GitPullRequest, MessageSquare, Server, type LucideIcon } from 'lucide-react'
 
 export interface TabDef {
   to: string
@@ -15,5 +15,6 @@ export interface TabDef {
 export const tabs: TabDef[] = [
   { to: '/chat', label: '指令', icon: MessageSquare, match: (p) => p.startsWith('/chat') },
   { to: '/', label: 'エージェント', icon: Bot, match: (p) => p === '/' || p.startsWith('/agents') },
+  { to: '/tasks', label: 'タスク', icon: GitPullRequest, match: (p) => p.startsWith('/tasks') },
   { to: '/infra', label: 'インフラ', icon: Server, match: (p) => p.startsWith('/infra') },
 ]
