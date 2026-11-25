@@ -6,7 +6,5 @@ export const tools: ToolLink[] = [
   { name: 'Grafana', description: 'メトリクス・ダッシュボード', url: 'http://192.168.0.13:3000' },
   { name: 'Prometheus', description: 'クエリ・アラート', url: 'http://192.168.0.20:30090' },
   { name: 'Hubble UI', description: 'Cilium の通信フロー', url: '#' },
-  { name: 'Longhorn UI', description: 'ボリュームとレプリカ', url: '#' },
-  { name: 'code-server', description: 'ブラウザで開発', url: '#' },
   { name: 'ArgoCD', description: 'GitOps・デプロイ管理', url: 'http://argocd.home' },
 ]
