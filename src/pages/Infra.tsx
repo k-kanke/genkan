@@ -47,13 +47,15 @@ function NodeCard({ n }: { n: ClusterView['nodes'][number] }) {
           <span className="muted-s">MEM {n.mem}%</span><Bar value={Math.min(n.mem, 100)} color="#A78BFA" />
         </div>
       )}
-      <div className="muted-s" style={{ margin: '10px 0 4px' }}>Pod {running} 稼働 / {n.pods.length} 個</div>
-      {[...byNs].sort(([a], [b]) => a.localeCompare(b)).map(([ns, pods]) => (
-        <details key={ns} className="ns" open={ns === 'genkan' || undefined}>
-          <summary><span className="mono-s">{ns}</span> <span className="muted-s">{pods.length}</span></summary>
-          {pods.map((p) => <PodRow key={p.name} p={p} />)}
-        </details>
-      ))}
+      <details className="node-pods">
+        <summary className="muted-s">Pod {running} 稼働 / {n.pods.length} 個</summary>
+        {[...byNs].sort(([a], [b]) => a.localeCompare(b)).map(([ns, pods]) => (
+          <details key={ns} className="ns" open={ns === 'genkan' || undefined}>
+            <summary><span className="mono-s">{ns}</span> <span className="muted-s">{pods.length}</span></summary>
+            {pods.map((p) => <PodRow key={p.name} p={p} />)}
+          </details>
+        ))}
+      </details>
     </Card>
   )
 }
