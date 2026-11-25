@@ -7,6 +7,7 @@
 
 export type TaskState =
   | 'PENDING' | 'RUNNING' | 'AWAITING_APPROVAL' | 'APPROVED' | 'PUBLISHING' | 'PUBLISHED'
+  | 'MERGED' | 'DEPLOYING' | 'DEPLOYED' | 'CLOSED'
   | 'NO_CHANGES' | 'REJECTED' | 'FAILED' | 'EXPIRED'
 
 export interface PatchFile {
@@ -39,6 +40,8 @@ export interface Task {
   patchBytes?: number
   prUrl?: string
   prNumber?: number
+  /** PR がマージされたら、自動で反映される(Control Plane に反映先の設定があるリポジトリ) */
+  autoDeploy?: boolean
   createdAt: string
   updatedAt: string
   finishedAt?: string
@@ -95,10 +98,25 @@ export const STATE_LABEL: Record<TaskState, { label: string; color: string }> = 
   APPROVED: { label: '承認済み', color: '#4ADE80' },
   PUBLISHING: { label: '公開中', color: '#60A5FA' },
   PUBLISHED: { label: 'PR 作成済み', color: '#4ADE80' },
+  MERGED: { label: 'マージ済み', color: '#A78BFA' },
+  DEPLOYING: { label: '反映中', color: '#60A5FA' },
+  DEPLOYED: { label: '反映済み', color: '#4ADE80' },
+  CLOSED: { label: 'PR を閉じた', color: '#9AA3AF' },
   NO_CHANGES: { label: '変更なし', color: '#9AA3AF' },
   REJECTED: { label: '却下', color: '#FCA5A5' },
   FAILED: { label: '失敗', color: '#F87171' },
   EXPIRED: { label: '期限切れ', color: '#9AA3AF' },
 }
 
-export const isActive = (s: TaskState) => s === 'PENDING' || s === 'RUNNING' || s === 'PUBLISHING'
+export const isActive = (s: TaskState) => s === 'PENDING' || s === 'RUNNING' || s === 'PUBLISHING' || s === 'MERGED' || s === 'DEPLOYING'
+
+/** PR ができたあとの、状態ごとの一行の説明(画面の二か所で使う) */
+export function publishNote(t: Task): string | undefined {
+  switch (t.state) {
+    case 'PUBLISHED': return t.autoDeploy ? 'PR をマージすると、自動で反映します。' : undefined
+    case 'MERGED': return 'マージされました。新しいイメージができるのを待っています…'
+    case 'DEPLOYING': return '新しいイメージで再起動しています…'
+    case 'DEPLOYED': return '反映しました。新しいイメージで動いています。(アプリは、開き直すと新しくなります)'
+    case 'CLOSED': return 'PR は、マージされずに閉じられました。'
+  }
+}

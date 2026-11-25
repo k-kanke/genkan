@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Check, ChevronLeft, ExternalLink, X } from 'lucide-react'
 import { Card, SectionTitle } from '../components/ui'
 import {
-  STATE_LABEL, approveTask, getPatch, getTask, isActive, rejectTask, watchTask,
+  STATE_LABEL, approveTask, getPatch, getTask, isActive, publishNote, rejectTask, watchTask,
   type Task, type TaskEvent,
 } from '../api/tasks'
 
@@ -79,6 +79,7 @@ export default function TaskDetail() {
 
         <Card><p className="desc" style={{ marginBottom: 0 }}>{task.prompt}</p></Card>
         {task.userMessage && <p className="error-text">{task.userMessage}</p>}
+        {publishNote(task) && <p className="muted-s" style={{ margin: '8px 2px 0' }}>{publishNote(task)}</p>}
         {error && <p className="error-text">{error}</p>}
 
         {task.prUrl && (

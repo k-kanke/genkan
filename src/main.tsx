@@ -9,6 +9,7 @@ import '@fontsource/jetbrains-mono/latin-400.css'
 import '@fontsource/jetbrains-mono/latin-500.css'
 import './styles.css'
 import App from './App'
+import { watchForNewVersion } from './pwa'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -17,3 +18,5 @@ createRoot(document.getElementById('root')!).render(
     </BrowserRouter>
   </StrictMode>,
 )
+
+watchForNewVersion()

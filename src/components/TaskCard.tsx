@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Check, ExternalLink, FileDiff, X } from 'lucide-react'
-import { STATE_LABEL, approveTask, getTask, isActive, rejectTask, watchTask, type Task } from '../api/tasks'
+import { STATE_LABEL, approveTask, getTask, isActive, publishNote, rejectTask, watchTask, type Task } from '../api/tasks'
 
 const POLL_MS = 3_000
 
@@ -20,7 +20,7 @@ export default function TaskCard({ taskId }: { taskId: string }) {
     const load = () => getTask(taskId).then((t) => { if (alive) { setTask(t); setError(undefined) } }).catch((e: Error) => alive && setError(e.message))
     load()
     // 終わったタスクは、もう変わらないので、ポーリングをやめる
-    const t = setInterval(() => { if (!task || isActive(task.state) || task.state === 'AWAITING_APPROVAL' || task.state === 'APPROVED') load() }, POLL_MS)
+    const t = setInterval(() => { if (!task || isActive(task.state) || task.state === 'AWAITING_APPROVAL' || task.state === 'APPROVED' || (task.state === 'PUBLISHED' && task.autoDeploy)) load() }, POLL_MS)
     const stop = watchTask(taskId, (e) => setLast(e.message))
     return () => { alive = false; clearInterval(t); stop() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,7 +59,7 @@ export default function TaskCard({ taskId }: { taskId: string }) {
         </span>
       </div>
 
-      {isActive(task.state) && <div className="muted-s">{last ?? '作業しています…'}</div>}
+      {(task.state === 'PENDING' || task.state === 'RUNNING') && <div className="muted-s">{last ?? '作業しています…'}</div>}
       {task.userMessage && <div className="risk-text">{task.userMessage}</div>}
       {task.state === 'NO_CHANGES' && <div className="muted-s">変更はありませんでした。</div>}
       {task.state === 'EXPIRED' && <div className="muted-s">保持期間が過ぎたため、差分は削除されました。</div>}
@@ -91,6 +91,7 @@ export default function TaskCard({ taskId }: { taskId: string }) {
 
       {task.state === 'APPROVED' && <div className="muted-s">承認しました。GitHub に繋がっていないため、PR はまだ作られません。</div>}
       {task.state === 'PUBLISHING' && <div className="muted-s">PR を作っています…</div>}
+      {publishNote(task) && <div className="muted-s">{publishNote(task)}</div>}
       {task.prUrl && (
         <a className="primary link-btn" href={task.prUrl} target="_blank" rel="noopener noreferrer">
           <ExternalLink size={16} />PR #{task.prNumber} を開いてマージする
