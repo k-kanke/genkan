@@ -8,4 +8,5 @@ export const tools: ToolLink[] = [
   { name: 'Hubble UI', description: 'Cilium の通信フロー', url: '#' },
   { name: 'Longhorn UI', description: 'ボリュームとレプリカ', url: '#' },
   { name: 'code-server', description: 'ブラウザで開発', url: '#' },
+  { name: 'ArgoCD', description: 'GitOps・デプロイ管理', url: '#' },
 ]
