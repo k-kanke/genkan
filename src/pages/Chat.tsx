@@ -4,6 +4,10 @@ import { ArrowUp, Rocket, Workflow } from 'lucide-react'
 import { getChat, getSummary, sendMessage } from '../api'
 import { useLive } from '../useLive'
 import { shortNode } from '../components/ui'
+import TaskCard from '../components/TaskCard'
+import { createTask } from '../api/tasks'
+import { parseIntent } from '../chat/intent'
+import { newId, useTaskChat } from '../chat/useTaskChat'
 
 export default function Chat() {
   const nav = useNavigate()
@@ -11,14 +15,32 @@ export default function Chat() {
   const summary = useLive(getSummary, ['agents'])
   const [text, setText] = useState('')
   const endRef = useRef<HTMLDivElement>(null)
+  const real = useTaskChat()
 
-  useEffect(() => { endRef.current?.scrollIntoView({ block: 'end' }) }, [msgs])
+  useEffect(() => { endRef.current?.scrollIntoView({ block: 'end' }) }, [msgs, real.items])
 
   const send = (t: string) => {
     const v = t.trim()
     if (!v) return
     setText('')
-    sendMessage(v)
+    // リポジトリへの依頼なら、本物のタスクとして扱う(まず確認を取る)。それ以外は、これまでの会話(モック)。
+    const intent = parseIntent(v)
+    if (!intent) { sendMessage(v); return }
+    real.add(
+      { id: newId(), kind: 'user', text: v },
+      { id: newId(), kind: 'orch', text: `${intent.repo} への依頼として受け取りました。次の内容で作業を始めてよいですか?\n\n「${intent.prompt}」` },
+      { id: newId(), kind: 'confirm', repo: intent.repo, prompt: intent.prompt, state: 'pending' },
+    )
+  }
+
+  const start = async (id: string, repo: string, prompt: string) => {
+    real.patch(id, { state: 'sent' })
+    try {
+      const t = await createTask(repo, prompt)
+      real.add({ id: newId(), kind: 'orch', text: '作業を始めます。差分ができたら、ここで承認を求めます。' }, { id: newId(), kind: 'task', taskId: t.id })
+    } catch (e) {
+      real.add({ id: newId(), kind: 'orch', text: `依頼を出せませんでした: ${(e as Error).message}` })
+    }
   }
   const total = summary ? summary.running + summary.waiting : 0
 
@@ -53,6 +75,21 @@ export default function Chat() {
                   ))}
                 </div>
               )}
+            </div>
+          )
+        })}
+        {real.items.map((i) => {
+          if (i.kind === 'user') return <div key={i.id} className="bubble me">{i.text}</div>
+          if (i.kind === 'orch') return <div key={i.id} className="orch-wrap"><div className="bubble orch" style={{ whiteSpace: 'pre-wrap' }}>{i.text}</div></div>
+          if (i.kind === 'task') return <div key={i.id} className="orch-wrap"><TaskCard taskId={i.taskId} /></div>
+          return (
+            <div key={i.id} className="orch-wrap">
+              {i.state === 'pending' ? (
+                <div className="choices">
+                  <button className="chip solid" onClick={() => start(i.id, i.repo, i.prompt)}>依頼する</button>
+                  <button className="chip" onClick={() => real.patch(i.id, { state: 'cancelled' })}>やめる</button>
+                </div>
+              ) : <div className="muted-s">{i.state === 'sent' ? '依頼しました' : '取りやめました'}</div>}
             </div>
           )
         })}
