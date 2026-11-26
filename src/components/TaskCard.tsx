@@ -47,7 +47,7 @@ export default function TaskCard({ taskId }: { taskId: string }) {
     }
   }
 
-  if (!task) return <div ref={root} className="task-card muted-s">{error ? `タスクを読み込めません: ${error}` : 'タスクを確認しています…'}</div>
+  if (!task) return <div ref={root} className="task-card muted-s">{error ? `Could not load the task: ${error}` : 'Checking the task…'}</div>
   const s = STATE_LABEL[task.state]
   const sum = task.summary
   return (
@@ -59,47 +59,47 @@ export default function TaskCard({ taskId }: { taskId: string }) {
         </span>
       </div>
 
-      {(task.state === 'PENDING' || task.state === 'RUNNING') && <div className="muted-s">{last ?? '作業しています…'}</div>}
+      {(task.state === 'PENDING' || task.state === 'RUNNING') && <div className="muted-s">{last ?? 'Working…'}</div>}
       {task.userMessage && <div className="risk-text">{task.userMessage}</div>}
-      {task.state === 'NO_CHANGES' && <div className="muted-s">変更はありませんでした。</div>}
-      {task.state === 'EXPIRED' && <div className="muted-s">保持期間が過ぎたため、差分は削除されました。</div>}
+      {task.state === 'NO_CHANGES' && <div className="muted-s">No changes were made.</div>}
+      {task.state === 'EXPIRED' && <div className="muted-s">The diff was deleted because the retention period has passed.</div>}
 
       {sum && task.state !== 'EXPIRED' && (
         <div className="stack" style={{ gap: 4 }}>
-          <div className="muted-s">{sum.files.length} ファイル · +{sum.added} / -{sum.deleted}</div>
+          <div className="muted-s">{sum.files.length} {sum.files.length === 1 ? 'file' : 'files'} · +{sum.added} / -{sum.deleted}</div>
           {sum.files.slice(0, 4).map((f) => <div key={f.path} className="mono-s path">{f.path}{f.risk ? <span className="risk"> ⚠ {f.risk}</span> : null}</div>)}
-          {sum.files.length > 4 && <div className="muted-s">ほか {sum.files.length - 4} ファイル</div>}
-          {sum.blocked && <div className="risk-text">公開できない変更を含むため、承認できません。</div>}
+          {sum.files.length > 4 && <div className="muted-s">and {sum.files.length - 4} more</div>}
+          {sum.blocked && <div className="risk-text">This cannot be approved: it contains changes that cannot be published.</div>}
         </div>
       )}
 
       {task.state === 'AWAITING_APPROVAL' && (
         confirm ? (
           <div className="row gap-s">
-            <span className="confirm-text grow">{confirm === 'approve' ? 'この差分を承認しますか?' : '却下しますか?'}</span>
-            <button className="chip" disabled={busy} onClick={() => setConfirm(undefined)}>戻る</button>
-            <button className="chip solid" disabled={busy} onClick={() => act(confirm)}>{confirm === 'approve' ? '承認する' : '却下する'}</button>
+            <span className="confirm-text grow">{confirm === 'approve' ? 'Approve this diff?' : 'Reject this task?'}</span>
+            <button className="chip" disabled={busy} onClick={() => setConfirm(undefined)}>Back</button>
+            <button className="chip solid" disabled={busy} onClick={() => act(confirm)}>{confirm === 'approve' ? 'Approve' : 'Reject'}</button>
           </div>
         ) : (
           <div className="choices">
-            <Link className="chip" to={`/tasks/${task.id}`}><FileDiff size={14} /> 差分を見る</Link>
-            <button className="chip" onClick={() => setConfirm('reject')}><X size={14} /> 却下</button>
-            <button className="chip solid" disabled={sum?.blocked} onClick={() => setConfirm('approve')}><Check size={14} /> 承認</button>
+            <Link className="chip" to={`/tasks/${task.id}`}><FileDiff size={14} /> View diff</Link>
+            <button className="chip" onClick={() => setConfirm('reject')}><X size={14} /> Reject</button>
+            <button className="chip solid" disabled={sum?.blocked} onClick={() => setConfirm('approve')}><Check size={14} /> Approve</button>
           </div>
         )
       )}
 
-      {task.state === 'APPROVED' && <div className="muted-s">承認しました。GitHub に繋がっていないため、PR はまだ作られません。</div>}
-      {task.state === 'PUBLISHING' && <div className="muted-s">PR を作っています…</div>}
+      {task.state === 'APPROVED' && <div className="muted-s">Approved. No pull request is created because GitHub is not connected.</div>}
+      {task.state === 'PUBLISHING' && <div className="muted-s">Creating the pull request…</div>}
       {publishNote(task) && <div className="muted-s">{publishNote(task)}</div>}
       {task.prUrl && (
         <a className="primary link-btn" href={task.prUrl} target="_blank" rel="noopener noreferrer">
-          <ExternalLink size={16} />PR #{task.prNumber} を開いてマージする
+          <ExternalLink size={16} />Open PR #{task.prNumber} to merge
         </a>
       )}
       {error && <div className="risk-text">{error}</div>}
       {(task.state === 'FAILED' || task.state === 'REJECTED' || task.state === 'NO_CHANGES') && (
-        <Link className="chip" to={`/tasks/${task.id}`}>詳細</Link>
+        <Link className="chip" to={`/tasks/${task.id}`}>Details</Link>
       )}
     </div>
   )

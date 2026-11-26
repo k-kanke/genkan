@@ -48,7 +48,7 @@ function NodeCard({ n }: { n: ClusterView['nodes'][number] }) {
         </div>
       )}
       <details className="node-pods">
-        <summary className="muted-s">Pod {running} 稼働 / {n.pods.length} 個</summary>
+        <summary className="muted-s">{running} of {n.pods.length} pods running</summary>
         {[...byNs].sort(([a], [b]) => a.localeCompare(b)).map(([ns, pods]) => (
           <details key={ns} className="ns" open={ns === 'genkan' || undefined}>
             <summary><span className="mono-s">{ns}</span> <span className="muted-s">{pods.length}</span></summary>
@@ -73,35 +73,35 @@ export default function Infra() {
     <div className="page">
       <header className="header">
         <div>
-          <h1>インフラ</h1>
-          <p className="sub">自宅サーバーのツールに Tailscale 経由でアクセス</p>
+          <h1>Infra</h1>
+          <p className="sub">Reach your home-lab tools over Tailscale</p>
         </div>
       </header>
 
-      <SectionTitle right={cluster && (cluster.live ? '10秒ごとに更新' : 'モック表示（クラスタ未接続）')}>クラスタ</SectionTitle>
+      <SectionTitle right={cluster && (cluster.live ? 'Updates every 10 s' : 'Mock data (cluster not connected)')}>Cluster</SectionTitle>
       <div className="nodes">
         {cluster?.nodes.map((n) => <NodeCard key={n.name} n={n} />)}
       </div>
       {cluster && cluster.unscheduled.length > 0 && (
         <Card className="node-card">
-          <div className="muted-s">未割り当て（Pending）</div>
+          <div className="muted-s">Unscheduled (Pending)</div>
           {cluster.unscheduled.map((p) => <PodRow key={p.name} p={p} />)}
         </Card>
       )}
 
-      <SectionTitle>ツール</SectionTitle>
+      <SectionTitle>Tools</SectionTitle>
       <div className="tools">
         {tools.map((t) => (
           <a key={t.name} className="card tool" href={t.url} target="_blank" rel="noopener noreferrer"
              onClick={(e) => { if (t.url === '#') e.preventDefault() }}>
             <div className="row between"><b>{t.name}</b>{t.url !== '#' && <ExternalLink size={14} color="#9AA3AF" />}</div>
             <span className="muted-s">{t.description}</span>
-            {t.url === '#' && <span className="tbd mono-s">未設定</span>}
+            {t.url === '#' && <span className="tbd mono-s">Not set</span>}
           </a>
         ))}
       </div>
 
-      <button className="add-service" disabled><Plus size={16} />サービスを追加（後で）</button>
+      <button className="add-service" disabled><Plus size={16} />Add a service (later)</button>
     </div>
   )
 }

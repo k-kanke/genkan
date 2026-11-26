@@ -22,37 +22,37 @@ export const nodes: ClusterNode[] = [
   { name: 'ubuntu-26', role: 'control-plane', ip: '192.168.0.20', cpu: 22, mem: 41 },
   { name: 'ubuntu-worker-01', role: 'worker', ip: '192.168.0.165', cpu: 58, mem: 64 },
   { name: 'ubuntu-worker-02', role: 'worker', ip: '192.168.0.166', cpu: 31, mem: 47 },
-  { name: 'ubuntu-worker-03', role: 'worker', ip: '192.168.0.23', note: 'Proxmox上のVM', cpu: 17, mem: 38 },
+  { name: 'ubuntu-worker-03', role: 'worker', ip: '192.168.0.23', note: 'VM on Proxmox', cpu: 17, mem: 38 },
 ]
 
 export const agents: Agent[] = [
   {
-    id: 'a', name: 'エージェントA', status: 'running', task: 'PR #42（auth）のレビュー',
-    description: 'PR #42 の認証まわりの変更をレビューし、懸念点をコメントにまとめる。',
+    id: 'a', name: 'Agent A', status: 'running', task: 'Review PR #42 (auth)',
+    description: 'Review the authentication changes in PR #42 and summarise concerns as comments.',
     node: 'ubuntu-worker-01', pod: 'agent-a-5d8e1', elapsedSec: 12 * 60 + 5, toolCalls: 31,
     lastAction: 'Read src/auth/jwt.go',
   },
   {
-    id: 'b', name: 'エージェントB', status: 'running', task: '落ちているテストの修正',
-    description: 'auth パッケージで落ちているテストの原因を調べて修正する。',
+    id: 'b', name: 'Agent B', status: 'running', task: 'Fix failing tests',
+    description: 'Find out why tests in the auth package fail and fix them.',
     node: 'ubuntu-worker-01', pod: 'agent-b-7f9c2', elapsedSec: 8 * 60 + 42, toolCalls: 27,
     lastAction: 'Bash go test ./auth/...',
   },
   {
-    id: 'c', name: 'エージェントC', status: 'running', task: 'Longhorn RWX の調査',
-    description: 'Longhorn の RWX ボリュームの要件と制約を調べ、導入可否をまとめる。',
+    id: 'c', name: 'Agent C', status: 'running', task: 'Research Longhorn RWX',
+    description: 'Look into the requirements and limits of Longhorn RWX volumes and summarise whether to adopt it.',
     node: 'ubuntu-worker-02', pod: 'agent-c-2b6a4', elapsedSec: 3 * 60 + 10, toolCalls: 9,
     lastAction: 'WebFetch longhorn.io',
   },
   {
-    id: 'd', name: 'エージェントD', status: 'waiting', task: '依存ライブラリの更新',
-    description: '依存ライブラリを更新してブランチへ push する。push の承認待ち。',
+    id: 'd', name: 'Agent D', status: 'waiting', task: 'Update dependencies',
+    description: 'Update dependencies and push to a branch. Waiting for approval to push.',
     node: 'ubuntu-worker-03', pod: 'agent-d-91c3f', elapsedSec: 15 * 60, toolCalls: 18,
-    lastAction: 'git push を待機', pendingCommand: 'git push origin deps-update',
+    lastAction: 'Waiting for git push', pendingCommand: 'git push origin deps-update',
   },
   {
-    id: 'e', name: 'エージェントE', status: 'done', task: 'README の整理',
-    description: 'README の構成を整理し、古い記述を削除した。',
+    id: 'e', name: 'Agent E', status: 'done', task: 'Tidy up the README',
+    description: 'Reorganised the README and removed outdated text.',
     node: 'ubuntu-worker-01', pod: 'agent-e-c40d8', elapsedSec: 21 * 60, toolCalls: 14,
     lastAction: 'Stop',
   },
@@ -63,37 +63,37 @@ const L = (time: string, tool: string, arg: string, i: number): LogEntry => ({
 })
 const logs: Record<string, LogEntry[]> = {
   b: [
-    L('14:18', 'Notify', 'オーケストレーターに仕様確認を依頼', 1),
+    L('14:18', 'Notify', 'Asked the orchestrator to confirm the spec', 1),
     L('14:17', 'Bash', 'go test ./auth/... → 1 failed', 2),
     L('14:16', 'Edit', 'auth/session_test.go', 3),
     L('14:15', 'Edit', 'auth/session.go', 4),
     L('14:14', 'Read', 'auth/refresh.go', 5),
     L('14:13', 'Grep', '"ErrTokenExpired"', 6),
     L('14:11', 'Bash', 'go test ./auth/... → 3 failed', 7),
-    L('14:10', 'Start', 'worker-01 に配置、worktree をマウント', 8),
+    L('14:10', 'Start', 'Placed on worker-01, mounted the worktree', 8),
   ],
   a: [
     L('14:18', 'Read', 'src/auth/jwt.go', 1),
     L('14:16', 'Grep', '"VerifyToken"', 2),
     L('14:14', 'Read', 'src/auth/middleware.go', 3),
     L('14:11', 'Bash', 'gh pr diff 42', 4),
-    L('14:06', 'Start', 'worker-01 に配置、PR #42 を取得', 5),
+    L('14:06', 'Start', 'Placed on worker-01, fetched PR #42', 5),
   ],
   c: [
     L('14:18', 'WebFetch', 'longhorn.io/docs/…/rwx', 1),
     L('14:17', 'WebSearch', 'Longhorn RWX NFS share-manager', 2),
-    L('14:15', 'Start', 'worker-02 に配置', 3),
+    L('14:15', 'Start', 'Placed on worker-02', 3),
   ],
   d: [
-    L('14:18', 'Notify', 'git push の承認を要求', 1),
+    L('14:18', 'Notify', 'Asked for approval to git push', 1),
     L('14:12', 'Bash', 'go mod tidy', 2),
     L('14:08', 'Edit', 'go.mod', 3),
-    L('14:03', 'Start', 'worker-03 に配置', 4),
+    L('14:03', 'Start', 'Placed on worker-03', 4),
   ],
   e: [
-    L('14:00', 'Stop', '完了', 1),
+    L('14:00', 'Stop', 'Done', 1),
     L('13:58', 'Edit', 'README.md', 2),
-    L('13:44', 'Start', 'worker-01 に配置', 3),
+    L('13:44', 'Start', 'Placed on worker-01', 3),
   ],
 }
 
@@ -102,22 +102,22 @@ const DONE_BEFORE_TODAY = 3
 export const getDoneBase = () => DONE_BEFORE_TODAY
 
 export const chat: ChatMessage[] = [
-  { id: 'm1', kind: 'user', text: 'auth まわりの PR #42 のレビューと、落ちてるテストの修正を並列でお願い' },
+  { id: 'm1', kind: 'user', text: 'Please review PR #42 (auth) and fix the failing tests, in parallel' },
   {
-    id: 'm2', kind: 'orchestrator', text: '了解。2体起動しました。',
+    id: 'm2', kind: 'orchestrator', text: 'Got it. Started 2 agents.',
     launches: [
-      { agentName: 'エージェントA', node: 'ubuntu-worker-01', task: 'PR #42 のレビュー' },
-      { agentName: 'エージェントB', node: 'ubuntu-worker-01', task: 'auth テストの修正' },
+      { agentName: 'Agent A', node: 'ubuntu-worker-01', task: 'Review PR #42' },
+      { agentName: 'Agent B', node: 'ubuntu-worker-01', task: 'Fix the auth tests' },
     ],
   },
-  { id: 'm3', kind: 'system', text: '14:18 · エージェントB からの報告' },
+  { id: 'm3', kind: 'system', text: '14:18 · Report from Agent B' },
   {
     id: 'm4', kind: 'orchestrator',
-    text: 'B より：落ちていた3件のうち2件は修正済み。残る `TestRefreshExpired` は、期限切れトークンを 401 と 403 のどちらで返すかの仕様確認が必要です。どちらにしますか？',
+    text: 'From B: 2 of the 3 failing tests are fixed. The remaining `TestRefreshExpired` needs a spec decision: should an expired token return 401 or 403?',
     choices: [
-      { label: '401 にする' },
-      { label: '403 にする' },
-      { label: 'B の作業を見る', to: '/agents/b' },
+      { label: 'Use 401' },
+      { label: 'Use 403' },
+      { label: 'View B\'s work', to: '/agents/b' },
     ],
   },
 ]
@@ -200,7 +200,7 @@ export function approve(id: string) {
   const cmd = a.pendingCommand
   a.status = 'running'
   a.pendingCommand = undefined
-  pushLog(id, 'Bash', `${cmd ?? ''} （承認済み）`)
+  pushLog(id, 'Bash', `${cmd ?? ''} (approved)`)
 }
 
 export function reject(id: string) {
@@ -208,8 +208,8 @@ export function reject(id: string) {
   if (!a || a.status !== 'waiting') return
   a.status = 'stopped'
   a.pendingCommand = undefined
-  a.lastAction = '却下により停止'
-  logs[id] = [{ id: `${id}-rej-${Date.now()}`, time: hhmm(mockNow()), tool: 'Stop', arg: '承認が却下されたため停止' }, ...(logs[id] ?? [])]
+  a.lastAction = 'Stopped (rejected)'
+  logs[id] = [{ id: `${id}-rej-${Date.now()}`, time: hhmm(mockNow()), tool: 'Stop', arg: 'Stopped because the approval was rejected' }, ...(logs[id] ?? [])]
   emit(`logs:${id}`)
   emit('agents')
 }
@@ -219,8 +219,8 @@ export function stop(id: string) {
   if (!a || (a.status !== 'running' && a.status !== 'waiting')) return
   a.status = 'stopped'
   a.pendingCommand = undefined
-  a.lastAction = 'Stop（手動）'
-  logs[id] = [{ id: `${id}-stop-${Date.now()}`, time: hhmm(mockNow()), tool: 'Stop', arg: '手動で停止' }, ...(logs[id] ?? [])]
+  a.lastAction = 'Stop (manual)'
+  logs[id] = [{ id: `${id}-stop-${Date.now()}`, time: hhmm(mockNow()), tool: 'Stop', arg: 'Stopped manually' }, ...(logs[id] ?? [])]
   emit(`logs:${id}`)
   emit('agents')
 }
@@ -232,14 +232,14 @@ let seq = 100
 const nextId = () => `m${seq++}`
 
 function replyFor(text: string): string {
-  if (/401/.test(text)) return '了解。B に「期限切れトークンは 401 で返す」方針で伝えました。修正が終わったらまた報告します。'
-  if (/403/.test(text)) return '了解。B に「期限切れトークンは 403 で返す」方針で伝えました。修正が終わったらまた報告します。'
-  if (/状況|状態|どう/.test(text)) {
+  if (/401/.test(text)) return 'Got it. I told B to return 401 for expired tokens. I will report back when the fix is done.'
+  if (/403/.test(text)) return 'Got it. I told B to return 403 for expired tokens. I will report back when the fix is done.'
+  if (/状況|状態|どう|status|how/i.test(text)) {
     const r = agents.filter((a) => a.status === 'running').length
     const w = agents.filter((a) => a.status === 'waiting').length
-    return `現在 実行中が ${r}体、承認待ちが ${w}体 です。承認待ちは「エージェント」タブから承認できます。`
+    return `Right now ${r} agents are running and ${w} are waiting for approval. You can approve them from the Agents tab.`
   }
-  return '承知しました。内容を整理して、必要ならエージェントを起動します。（これはモックの定型返信です）'
+  return 'Understood. I will sort this out and start agents if needed. (This is a canned mock reply.)'
 }
 
 export function sendUserMessage(text: string) {

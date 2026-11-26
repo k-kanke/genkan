@@ -21,11 +21,27 @@ export interface Intent {
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
-/** 文の先頭や途中の「genkan で」「genkan の」「genkan を」などの呼びかけを落として、依頼の本文にする。 */
+/**
+ * 依頼の本文から、リポジトリ名の呼びかけを取り除く。
+ * 英語: "In genkan, add …" / "genkan: add …" / "… of ai-app-platform"。日本語: 「genkan で」「genkan の」「genkan を」など。
+ */
 function stripMention(text: string, mention: string): string {
-  const re = new RegExp(`${escapeRe(mention)}\\s*(?:リポジトリ|repo|repository)?\\s*(?:で|の|を|に|は|について)?[、,:：]?\\s*`, 'i')
-  const out = text.replace(re, '').trim()
-  return out || text.trim()
+  const m = escapeRe(mention)
+  const forms = [
+    // English: a preposition before the name ("in genkan", "for k-kanke/genkan"), with an optional "repo" and a comma or colon
+    new RegExp(`\\b(?:in|on|for|at|to|of|from)\\s+${m}(?![\\w./-])\\s*(?:repo(?:sitory)?\\b)?\\s*[,:]?\\s*`, 'i'),
+    // English: the name first, followed by a comma or colon ("genkan: add …")
+    new RegExp(`${m}\\s*[,:：]\\s*`, 'i'),
+    // Japanese particles after the name (or just the name)
+    new RegExp(`${m}\\s*(?:リポジトリ|repo|repository)?\\s*(?:で|の|を|に|は|について)?[、,:：]?\\s*`, 'i'),
+  ]
+  for (const re of forms) {
+    if (re.test(text)) {
+      const out = text.replace(re, ' ').replace(/\s+/g, ' ').trim()
+      return out || text.trim()
+    }
+  }
+  return text.trim()
 }
 
 export function parseIntent(text: string): Intent | null {

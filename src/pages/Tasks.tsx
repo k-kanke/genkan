@@ -40,30 +40,30 @@ export default function Tasks() {
     <div className="page">
       <header className="header">
         <div>
-          <h1>タスク</h1>
-          <p className="sub">リポジトリへの変更を頼み、差分を確認して承認する</p>
+          <h1>Tasks</h1>
+          <p className="sub">Ask for a change to a repository, review the diff, and approve it</p>
         </div>
       </header>
 
       <Card className="stack">
         <label className="field">
-          <span className="muted-s">リポジトリ</span>
+          <span className="muted-s">Repository</span>
           <input list="repos" value={repo} onChange={(e) => setRepo(e.target.value)} placeholder="owner/name" autoCapitalize="off" autoCorrect="off" />
           <datalist id="repos">{SUGGESTED_REPOS.map((r) => <option key={r} value={r} />)}</datalist>
         </label>
         <label className="field">
-          <span className="muted-s">依頼</span>
+          <span className="muted-s">Request</span>
           <textarea rows={4} value={prompt} onChange={(e) => setPrompt(e.target.value)}
-            placeholder="例: インフラ画面のコンテナ詳細をトグルにしまって" />
+            placeholder="e.g. Tuck the container details on the Infra screen into a toggle" />
         </label>
         <button className="primary" disabled={busy || !prompt.trim()} onClick={submit}>
-          <Send size={16} />{busy ? '送っています…' : '依頼する'}
+          <Send size={16} />{busy ? 'Sending…' : 'Submit request'}
         </button>
       </Card>
-      {error && <p className="error-text">つながりませんでした: {error}</p>}
+      {error && <p className="error-text">Could not connect: {error}</p>}
 
-      <SectionTitle>履歴</SectionTitle>
-      {tasks?.length === 0 && <p className="muted-s">まだタスクはありません</p>}
+      <SectionTitle>History</SectionTitle>
+      {tasks?.length === 0 && <p className="muted-s">No tasks yet</p>}
       <div className="stack">
         {tasks?.map((t) => {
           const s = STATE_LABEL[t.state]
@@ -76,7 +76,7 @@ export default function Tasks() {
                 </span>
               </div>
               <div className="task-prompt">{t.prompt}</div>
-              <div className="muted-s">{new Date(t.createdAt).toLocaleString('ja-JP')}</div>
+              <div className="muted-s">{new Date(t.createdAt).toLocaleString('en-GB')}</div>
             </Link>
           )
         })}

@@ -16,14 +16,14 @@ export default function AgentDetail() {
   const logs = useLive(() => getAgentLogs(id), [`logs:${id}`])
   const [confirming, setConfirming] = useState(false)
 
-  if (!agent) return <div className="page"><p className="muted-s">読み込み中…</p></div>
+  if (!agent) return <div className="page"><p className="muted-s">Loading…</p></div>
   const active = agent.status === 'running' || agent.status === 'waiting'
 
   return (
     <>
       <div className="page has-actions">
         <header className="header">
-          <button className="icon-btn" aria-label="戻る" onClick={() => nav(-1)}><ChevronLeft size={22} /></button>
+          <button className="icon-btn" aria-label="Back" onClick={() => nav(-1)}><ChevronLeft size={22} /></button>
           <div className="grow">
             <h1>{agent.name}</h1>
             <StatusBadge status={agent.status} />
@@ -33,14 +33,14 @@ export default function AgentDetail() {
         <Card>
           <p className="desc">{agent.description}</p>
           <dl className="grid2">
-            <div><dt>ノード</dt><dd className="mono-s">{agent.node}</dd></div>
+            <div><dt>Node</dt><dd className="mono-s">{agent.node}</dd></div>
             <div><dt>Pod</dt><dd className="mono-s">{agent.pod}</dd></div>
-            <div><dt>経過時間</dt><dd className="mono-s">{fmtClock(agent.elapsedSec)}</dd></div>
-            <div><dt>ツール呼び出し</dt><dd className="mono-s">{agent.toolCalls} 回</dd></div>
+            <div><dt>Elapsed</dt><dd className="mono-s">{fmtClock(agent.elapsedSec)}</dd></div>
+            <div><dt>Tool calls</dt><dd className="mono-s">{agent.toolCalls}</dd></div>
           </dl>
         </Card>
 
-        <SectionTitle right="hooks から受信">ライブログ</SectionTitle>
+        <SectionTitle right="received from hooks">Live log</SectionTitle>
         <Card className="log">
           {logs?.map((l) => (
             <div key={l.id} className="log-row mono-s">
@@ -55,14 +55,14 @@ export default function AgentDetail() {
       <div className="action-bar">
         {confirming ? (
           <>
-            <span className="grow confirm-text">{agent.name} を停止しますか？</span>
-            <button className="btn btn-ghost" onClick={() => setConfirming(false)}>やめる</button>
-            <button className="btn btn-stop" onClick={() => { stopAgent(id); setConfirming(false) }}>停止する</button>
+            <span className="grow confirm-text">Stop {agent.name}?</span>
+            <button className="btn btn-ghost" onClick={() => setConfirming(false)}>Cancel</button>
+            <button className="btn btn-stop" onClick={() => { stopAgent(id); setConfirming(false) }}>Stop</button>
           </>
         ) : (
           <>
-            <Link to="/chat" className="btn btn-primary grow"><Send size={16} />指示を送る</Link>
-            <button className="btn btn-stop" disabled={!active} onClick={() => setConfirming(true)}><Square size={14} />停止</button>
+            <Link to="/chat" className="btn btn-primary grow"><Send size={16} />Send instruction</Link>
+            <button className="btn btn-stop" disabled={!active} onClick={() => setConfirming(true)}><Square size={14} />Stop</button>
           </>
         )}
       </div>
