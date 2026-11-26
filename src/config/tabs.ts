@@ -13,8 +13,8 @@ export interface TabDef {
  * 「開発」タブを足すときは、配列に1行足して Route を追加するだけでよい。
  */
 export const tabs: TabDef[] = [
-  { to: '/chat', label: '指令', icon: MessageSquare, match: (p) => p.startsWith('/chat') },
-  { to: '/', label: 'エージェント', icon: Bot, match: (p) => p === '/' || p.startsWith('/agents') },
-  { to: '/tasks', label: 'タスク', icon: GitPullRequest, match: (p) => p.startsWith('/tasks') },
-  { to: '/infra', label: 'インフラ', icon: Server, match: (p) => p.startsWith('/infra') },
+  { to: '/chat', label: 'Command', icon: MessageSquare, match: (p) => p.startsWith('/chat') },
+  { to: '/', label: 'Agents', icon: Bot, match: (p) => p === '/' || p.startsWith('/agents') },
+  { to: '/tasks', label: 'Tasks', icon: GitPullRequest, match: (p) => p.startsWith('/tasks') },
+  { to: '/infra', label: 'Infra', icon: Server, match: (p) => p.startsWith('/infra') },
 ]
