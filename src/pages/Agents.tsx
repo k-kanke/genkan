@@ -15,27 +15,27 @@ export default function Agents() {
     <div className="page">
       <header className="header">
         <div>
-          <h1>エージェント</h1>
-          <p className="sub mono-s">home-k8s · Tailscale 接続中</p>
+          <h1>Agents</h1>
+          <p className="sub mono-s">home-k8s · Tailscale connected</p>
         </div>
         <span className="live"><i className="dot pulse" />LIVE</span>
       </header>
 
       <div className="stats">
-        <Card className="stat"><b style={{ color: '#60A5FA' }}>{summary?.running ?? '–'}</b><span>実行中</span></Card>
-        <Card className="stat"><b style={{ color: '#FBBF24' }}>{summary?.waiting ?? '–'}</b><span>承認待ち</span></Card>
-        <Card className="stat"><b>{summary?.doneToday ?? '–'}</b><span>今日完了</span></Card>
+        <Card className="stat"><b style={{ color: '#60A5FA' }}>{summary?.running ?? '–'}</b><span>Running</span></Card>
+        <Card className="stat"><b style={{ color: '#FBBF24' }}>{summary?.waiting ?? '–'}</b><span>Awaiting approval</span></Card>
+        <Card className="stat"><b>{summary?.doneToday ?? '–'}</b><span>Done today</span></Card>
       </div>
 
       {waiting.map((a) => <ApprovalCard key={a.id} agent={a} />)}
 
-      <SectionTitle>ノード</SectionTitle>
+      <SectionTitle>Nodes</SectionTitle>
       <div className="stack">
         {nodes?.filter((n) => n.role === 'worker').map((n) => (
           <Card key={n.name}>
             <div className="row between">
               <span className="mono">{n.name}</span>
-              <span className="muted-s">{n.agentCount} 体</span>
+              <span className="muted-s">{n.agentCount} {n.agentCount === 1 ? 'agent' : 'agents'}</span>
             </div>
             <div className="meter"><span>CPU</span><Bar value={n.cpu} /><em>{n.cpu}%</em></div>
             <div className="meter"><span>MEM</span><Bar value={n.mem} color="#A5B4FC" /><em>{n.mem}%</em></div>
@@ -43,7 +43,7 @@ export default function Agents() {
         ))}
       </div>
 
-      <SectionTitle>稼働中のエージェント</SectionTitle>
+      <SectionTitle>Active agents</SectionTitle>
       <div className="stack">
         {agents?.map((a) => (
           <Link key={a.id} to={`/agents/${a.id}`} className="card agent-card">

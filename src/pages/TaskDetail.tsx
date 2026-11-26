@@ -59,7 +59,7 @@ export default function TaskDetail() {
     }
   }
 
-  if (!task) return <div className="page"><p className="muted-s">{error ? `読み込めません: ${error}` : '読み込み中…'}</p></div>
+  if (!task) return <div className="page"><p className="muted-s">{error ? `Could not load: ${error}` : 'Loading…'}</p></div>
   const s = STATE_LABEL[task.state]
   const waiting = task.state === 'AWAITING_APPROVAL'
   const blocked = task.summary?.blocked
@@ -68,7 +68,7 @@ export default function TaskDetail() {
     <>
       <div className={`page ${waiting ? 'has-actions' : ''}`}>
         <header className="header">
-          <button className="icon-btn" aria-label="戻る" onClick={() => nav('/tasks')}><ChevronLeft size={22} /></button>
+          <button className="icon-btn" aria-label="Back" onClick={() => nav('/tasks')}><ChevronLeft size={22} /></button>
           <div className="grow">
             <h1 className="mono">{task.repo}</h1>
             <span className="status" style={{ color: s.color }}>
@@ -84,13 +84,13 @@ export default function TaskDetail() {
 
         {task.prUrl && (
           <a className="primary link-btn" href={task.prUrl} target="_blank" rel="noopener noreferrer">
-            <ExternalLink size={16} />PR #{task.prNumber} を開く(マージはここで)
+            <ExternalLink size={16} />Open PR #{task.prNumber} (merge it there)
           </a>
         )}
 
         {task.summary && (
           <>
-            <SectionTitle right={`+${task.summary.added} / -${task.summary.deleted}`}>変更されたファイル</SectionTitle>
+            <SectionTitle right={`+${task.summary.added} / -${task.summary.deleted}`}>Changed files</SectionTitle>
             <Card className="list">
               {task.summary.files.map((f) => (
                 <div key={f.path} className="list-row">
@@ -102,31 +102,31 @@ export default function TaskDetail() {
                 </div>
               ))}
             </Card>
-            {blocked && <p className="error-text">公開できない変更を含むため、承認できません。</p>}
+            {blocked && <p className="error-text">This cannot be approved: it contains changes that cannot be published.</p>}
           </>
         )}
 
         {patch && (
           <>
-            <SectionTitle>差分</SectionTitle>
+            <SectionTitle>Diff</SectionTitle>
             <pre className="diff">
               {(expand ? lines : lines.slice(0, MAX_DIFF_LINES)).map((l, i) => (
                 <span key={i} className={lineClass(l)}>{l + '\n'}</span>
               ))}
             </pre>
             {!expand && lines.length > MAX_DIFF_LINES && (
-              <button className="chip" onClick={() => setExpand(true)}>残り {lines.length - MAX_DIFF_LINES} 行を表示</button>
+              <button className="chip" onClick={() => setExpand(true)}>Show the remaining {lines.length - MAX_DIFF_LINES} lines</button>
             )}
           </>
         )}
 
         {events.length > 0 && (
           <>
-            <SectionTitle>経過</SectionTitle>
+            <SectionTitle>Progress</SectionTitle>
             <Card className="list">
               {events.slice(-12).map((e) => (
                 <div key={e.id} className="list-row" style={{ minHeight: 40 }}>
-                  <span className="mono-s muted">{new Date(e.createdAt).toLocaleTimeString('ja-JP')}</span>
+                  <span className="mono-s muted">{new Date(e.createdAt).toLocaleTimeString('en-GB')}</span>
                   <span className="grow">{e.message}</span>
                 </div>
               ))}
@@ -139,14 +139,14 @@ export default function TaskDetail() {
         <div className="action-bar">
           {confirm ? (
             <>
-              <span className="confirm-text grow">{confirm === 'approve' ? 'この差分を承認しますか?' : '却下しますか?'}</span>
-              <button className="chip" disabled={busy} onClick={() => setConfirm(undefined)}>戻る</button>
-              <button className="chip solid" disabled={busy} onClick={() => act(confirm)}>{confirm === 'approve' ? '承認する' : '却下する'}</button>
+              <span className="confirm-text grow">{confirm === 'approve' ? 'Approve this diff?' : 'Reject this task?'}</span>
+              <button className="chip" disabled={busy} onClick={() => setConfirm(undefined)}>Back</button>
+              <button className="chip solid" disabled={busy} onClick={() => act(confirm)}>{confirm === 'approve' ? 'Approve' : 'Reject'}</button>
             </>
           ) : (
             <>
-              <button className="chip grow" onClick={() => setConfirm('reject')}><X size={16} /> 却下</button>
-              <button className="chip solid grow" disabled={blocked} onClick={() => setConfirm('approve')}><Check size={16} /> 承認</button>
+              <button className="chip grow" onClick={() => setConfirm('reject')}><X size={16} /> Reject</button>
+              <button className="chip solid grow" disabled={blocked} onClick={() => setConfirm('approve')}><Check size={16} /> Approve</button>
             </>
           )}
         </div>

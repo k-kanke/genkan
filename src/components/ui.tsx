@@ -2,11 +2,11 @@ import type { ReactNode } from 'react'
 import type { AgentStatus } from '../types'
 
 export const STATUS: Record<AgentStatus, { label: string; color: string }> = {
-  running: { label: '実行中', color: '#60A5FA' },
-  waiting: { label: '承認待ち', color: '#FBBF24' },
-  done: { label: '完了', color: '#9AA3AF' },
-  stopped: { label: '停止', color: '#FCA5A5' },
-  failed: { label: '失敗', color: '#F87171' },
+  running: { label: 'Running', color: '#60A5FA' },
+  waiting: { label: 'Awaiting approval', color: '#FBBF24' },
+  done: { label: 'Done', color: '#9AA3AF' },
+  stopped: { label: 'Stopped', color: '#FCA5A5' },
+  failed: { label: 'Failed', color: '#F87171' },
 }
 
 export function StatusBadge({ status }: { status: AgentStatus }) {

@@ -28,7 +28,7 @@ export default function Chat() {
     if (!intent) { sendMessage(v); return }
     real.add(
       { id: newId(), kind: 'user', text: v },
-      { id: newId(), kind: 'orch', text: `${intent.repo} への依頼として受け取りました。次の内容で作業を始めてよいですか?\n\n「${intent.prompt}」` },
+      { id: newId(), kind: 'orch', text: `Got it: this is a request for ${intent.repo}. Shall I start working on the following?\n\n“${intent.prompt}”` },
       { id: newId(), kind: 'confirm', repo: intent.repo, prompt: intent.prompt, state: 'pending' },
     )
   }
@@ -37,9 +37,9 @@ export default function Chat() {
     real.patch(id, { state: 'sent' })
     try {
       const t = await createTask(repo, prompt)
-      real.add({ id: newId(), kind: 'orch', text: '作業を始めます。差分ができたら、ここで承認を求めます。' }, { id: newId(), kind: 'task', taskId: t.id })
+      real.add({ id: newId(), kind: 'orch', text: "Starting work. I'll ask for your approval here once the diff is ready." }, { id: newId(), kind: 'task', taskId: t.id })
     } catch (e) {
-      real.add({ id: newId(), kind: 'orch', text: `依頼を出せませんでした: ${(e as Error).message}` })
+      real.add({ id: newId(), kind: 'orch', text: `Could not submit the request: ${(e as Error).message}` })
     }
   }
   const total = summary ? summary.running + summary.waiting : 0
@@ -49,8 +49,8 @@ export default function Chat() {
       <header className="header">
         <span className="orch-icon"><Workflow size={20} /></span>
         <div>
-          <h1>オーケストレーター</h1>
-          <p className="sub">配下 {total}体 · 実行中 {summary?.running ?? 0} · 承認待ち {summary?.waiting ?? 0}</p>
+          <h1>Orchestrator</h1>
+          <p className="sub">{total} {total === 1 ? 'agent' : 'agents'} · {summary?.running ?? 0} running · {summary?.waiting ?? 0} awaiting approval</p>
         </div>
       </header>
 
@@ -67,7 +67,7 @@ export default function Chat() {
                   <div className="task">{l.task}</div>
                 </div>
               ))}
-              {m.launches && <div className="muted-s">配置先はスケジューラが空き容量で決定</div>}
+              {m.launches && <div className="muted-s">Placement is decided by the scheduler from free capacity</div>}
               {m.choices && (
                 <div className="choices">
                   {m.choices.map((c) => (
@@ -86,10 +86,10 @@ export default function Chat() {
             <div key={i.id} className="orch-wrap">
               {i.state === 'pending' ? (
                 <div className="choices">
-                  <button className="chip solid" onClick={() => start(i.id, i.repo, i.prompt)}>依頼する</button>
-                  <button className="chip" onClick={() => real.patch(i.id, { state: 'cancelled' })}>やめる</button>
+                  <button className="chip solid" onClick={() => start(i.id, i.repo, i.prompt)}>Start</button>
+                  <button className="chip" onClick={() => real.patch(i.id, { state: 'cancelled' })}>Cancel</button>
                 </div>
-              ) : <div className="muted-s">{i.state === 'sent' ? '依頼しました' : '取りやめました'}</div>}
+              ) : <div className="muted-s">{i.state === 'sent' ? 'Requested' : 'Cancelled'}</div>}
             </div>
           )
         })}
@@ -97,8 +97,8 @@ export default function Chat() {
       </div>
 
       <form className="composer" onSubmit={(e) => { e.preventDefault(); send(text) }}>
-        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="指示を入力…" enterKeyHint="send" />
-        <button className="send" aria-label="送信" disabled={!text.trim()}><ArrowUp size={20} /></button>
+        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Type an instruction…" enterKeyHint="send" />
+        <button className="send" aria-label="Send" disabled={!text.trim()}><ArrowUp size={20} /></button>
       </form>
     </div>
   )

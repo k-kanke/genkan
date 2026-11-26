@@ -92,20 +92,20 @@ export function watchTask(id: string, cb: (e: TaskEvent) => void): () => void {
 }
 
 export const STATE_LABEL: Record<TaskState, { label: string; color: string }> = {
-  PENDING: { label: '待機中', color: '#9AA3AF' },
-  RUNNING: { label: '作業中', color: '#60A5FA' },
-  AWAITING_APPROVAL: { label: '承認待ち', color: '#FBBF24' },
-  APPROVED: { label: '承認済み', color: '#4ADE80' },
-  PUBLISHING: { label: '公開中', color: '#60A5FA' },
-  PUBLISHED: { label: 'PR 作成済み', color: '#4ADE80' },
-  MERGED: { label: 'マージ済み', color: '#A78BFA' },
-  DEPLOYING: { label: '反映中', color: '#60A5FA' },
-  DEPLOYED: { label: '反映済み', color: '#4ADE80' },
-  CLOSED: { label: 'PR を閉じた', color: '#9AA3AF' },
-  NO_CHANGES: { label: '変更なし', color: '#9AA3AF' },
-  REJECTED: { label: '却下', color: '#FCA5A5' },
-  FAILED: { label: '失敗', color: '#F87171' },
-  EXPIRED: { label: '期限切れ', color: '#9AA3AF' },
+  PENDING: { label: 'Pending', color: '#9AA3AF' },
+  RUNNING: { label: 'Running', color: '#60A5FA' },
+  AWAITING_APPROVAL: { label: 'Awaiting approval', color: '#FBBF24' },
+  APPROVED: { label: 'Approved', color: '#4ADE80' },
+  PUBLISHING: { label: 'Publishing', color: '#60A5FA' },
+  PUBLISHED: { label: 'PR created', color: '#4ADE80' },
+  MERGED: { label: 'Merged', color: '#A78BFA' },
+  DEPLOYING: { label: 'Deploying', color: '#60A5FA' },
+  DEPLOYED: { label: 'Deployed', color: '#4ADE80' },
+  CLOSED: { label: 'PR closed', color: '#9AA3AF' },
+  NO_CHANGES: { label: 'No changes', color: '#9AA3AF' },
+  REJECTED: { label: 'Rejected', color: '#FCA5A5' },
+  FAILED: { label: 'Failed', color: '#F87171' },
+  EXPIRED: { label: 'Expired', color: '#9AA3AF' },
 }
 
 export const isActive = (s: TaskState) => s === 'PENDING' || s === 'RUNNING' || s === 'PUBLISHING' || s === 'MERGED' || s === 'DEPLOYING'
@@ -113,10 +113,10 @@ export const isActive = (s: TaskState) => s === 'PENDING' || s === 'RUNNING' || 
 /** PR ができたあとの、状態ごとの一行の説明(画面の二か所で使う) */
 export function publishNote(t: Task): string | undefined {
   switch (t.state) {
-    case 'PUBLISHED': return t.autoDeploy ? 'PR をマージすると、自動で反映します。' : undefined
-    case 'MERGED': return 'マージされました。新しいイメージができるのを待っています…'
-    case 'DEPLOYING': return '新しいイメージで再起動しています…'
-    case 'DEPLOYED': return '反映しました。新しいイメージで動いています。(アプリは、開き直すと新しくなります)'
-    case 'CLOSED': return 'PR は、マージされずに閉じられました。'
+    case 'PUBLISHED': return t.autoDeploy ? 'Merge the PR and it is deployed automatically.' : undefined
+    case 'MERGED': return 'Merged. Waiting for the new image to be built…'
+    case 'DEPLOYING': return 'Restarting onto the new image…'
+    case 'DEPLOYED': return 'Deployed. The new image is running.'
+    case 'CLOSED': return 'The PR was closed without being merged.'
   }
 }

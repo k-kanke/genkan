@@ -19,6 +19,6 @@ export function useLive<T>(fetcher: () => Promise<T>, topics: Topic[]): T | unde
   return data
 }
 
-export const fmtMinutes = (s: number) => `${Math.floor(s / 60)}分`
+export const fmtMinutes = (s: number) => `${Math.floor(s / 60)} min`
 export const fmtClock = (s: number) =>
   `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`

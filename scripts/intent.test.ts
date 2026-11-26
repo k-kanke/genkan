@@ -13,6 +13,13 @@ const cases: [string, string | null, string?][] = [
   ['genkanai の話', null],
   ['', null],
   ['a/b/c のこと', null],
+  // English
+  ['In genkan, add a search box to the Tasks screen', 'k-kanke/genkan', 'add a search box to the Tasks screen'],
+  ['genkan: add a dark mode', 'k-kanke/genkan', 'add a dark mode'],
+  ['Fix the typo in the README of ai-app-platform', 'k-kanke/ai-app-platform', 'Fix the typo in the README'],
+  ['k-kanke/genkan add a search box', 'k-kanke/genkan', 'add a search box'],
+  ['What is the status of the agents?', null],
+  ['Look at https://github.com/k-kanke/genkan for me', null],
 ]
 
 let bad = 0
