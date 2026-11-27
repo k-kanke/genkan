@@ -6,7 +6,6 @@ resources:
   - rbac.yaml
   - deployment.yaml
   - service.yaml
-  - ingress.yaml
 # タグ固定したい場合: kustomize edit set image ghcr.io/k-kanke/genkan=ghcr.io/k-kanke/genkan:sha-xxxxxxx
 images:
   - name: ghcr.io/k-kanke/genkan

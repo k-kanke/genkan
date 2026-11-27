@@ -4,7 +4,7 @@ metadata:
   name: genkan
   namespace: genkan
 spec:
-  # 各ノードの 30081 で公開(http://<ノードIP>:30081)。Tailscale Ingress(ingress.yaml)は残す。外すのは SSO 経由の確認後に別 PR
+  # 各ノードの 30081 で公開(http://<ノードIP>:30081)。Tailscale Ingress は削除済み
   type: NodePort
   selector:
     app: genkan
