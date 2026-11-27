@@ -16,7 +16,7 @@ npm run build      # dist/ に本番ビルド（PWA の service worker も生成
 npm run preview
 ```
 
-PWA は HTTPS（または localhost）でないと Service Worker が動かない。自宅k8sでは下記の Tailscale Ingress で `https://genkan.<TAILNET>` として公開する。
+PWA は HTTPS（または localhost）でないと Service Worker が動かない。自宅k8sでは NodePort 30081（`http://<ノードIP>:30081`）で公開しており、これは HTTP なので PWA のインストールと自動更新は効かない。HTTPS の入口（SSO 経由）は別途用意する。
 
 ## Docker
 
@@ -27,24 +27,12 @@ docker run --rm -p 8080:8080 genkan
 
 ビルドして `nginx-unprivileged`（非root・ポート8080）で静的配信する。SPA fallback、`/healthz`、キャッシュ制御（`index.html`・`sw.js`・`manifest.webmanifest` は no-cache、`/assets/*` は immutable）は `nginx.conf`。
 
-## デプロイ（自宅k8s + Tailscale）
+## デプロイ（自宅k8s）
 
 `main` に push → GitHub Actions（`.github/workflows/build.yml`）が `ghcr.io/k-kanke/genkan`（`sha-<短いID>` と `latest`、linux/amd64）を push → k8s に反映。マニフェストは `deploy/k8s/`（kustomize）。
 
-### クラスタ側の前提（`kubernetes-platform` で一度だけ）
-1. Tailscale 管理画面で **MagicDNS** と **HTTPS証明書** を有効にする
-2. 管理画面で Operator 用の **OAuthクライアント**（Devices Core と Auth Keys の書き込み権限、タグ `tag:k8s-operator`）を作る
-3. ACL の `tagOwners` に `tag:k8s-operator` と `tag:k8s` を追加する
-4. Helm で Operator を入れる（OAuthのシークレットは Git に置かない）:
-   ```sh
-   helm repo add tailscale https://pkgs.tailscale.com/helmcharts && helm repo update
-   helm upgrade --install tailscale-operator tailscale/tailscale-operator \
-     -n tailscale --create-namespace \
-     --set-string oauth.clientId=<CLIENT_ID> --set-string oauth.clientSecret=<CLIENT_SECRET> --wait
-   ```
-
 ### デプロイ手順
-- 初回: `kubectl apply -k deploy/k8s`
+- 初回: `kubectl apply -k deploy/k8s`（Service は NodePort 30081）
 - 更新: main に push → Actions がイメージを push → `kubectl -n genkan rollout restart deploy/genkan`（Argo CD に移したら自動化）
 - イメージを非公開にした場合: `deploy/k8s/deployment.yaml` の `imagePullSecrets` のコメントを外し、Secret を作る（PAT は `read:packages` のみ）:
   ```sh
@@ -55,7 +43,7 @@ docker run --rm -p 8080:8080 genkan
 - 初回 push 後、GHCR のパッケージは private で作られる。公開リポジトリのまま使うなら、パッケージ設定で Public にするか、上記 `ghcr-pull` を使う。
 
 ### スマホでの使い方
-Tailscale をオンにして `https://genkan.<TAILNET>`（`<TAILNET>` は例: `tail1234.ts.net`）を開き、「ホーム画面に追加」。
+家の LAN 内で `http://<ノードIP>:30081` を開く（HTTP のため「ホーム画面に追加」は PWA としては動かない）。
 
 ## 設計: `src/api/` を差し替えれば本物のAPIにつながる
 
