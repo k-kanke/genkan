@@ -4,9 +4,11 @@ metadata:
   name: genkan
   namespace: genkan
 spec:
-  type: ClusterIP
+  # 各ノードの 30081 で公開(http://<ノードIP>:30081)。Tailscale Ingress(ingress.yaml)は残す。外すのは SSO 経由の確認後に別 PR
+  type: NodePort
   selector:
     app: genkan
   ports:
     - port: 80
       targetPort: 8080
+      nodePort: 30081
