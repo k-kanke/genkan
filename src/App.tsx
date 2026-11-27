@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Agents from './pages/Agents'
 import AgentDetail from './pages/AgentDetail'
@@ -8,8 +8,6 @@ import Tasks from './pages/Tasks'
 import TaskDetail from './pages/TaskDetail'
 
 export default function App() {
-  const { pathname } = useLocation()
-  const hideNav = pathname.startsWith('/agents/') || pathname.startsWith('/tasks/')
   return (
     <div className="app">
       <main className="main">
@@ -23,7 +21,7 @@ export default function App() {
           <Route path="*" element={<Agents />} />
         </Routes>
       </main>
-      {!hideNav && <BottomNav />}
+      <BottomNav />
     </div>
   )
 }
